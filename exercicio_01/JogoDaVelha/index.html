@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Ex 01: Jogo da Velha</title>
+		<link rel="stylesheet" href="static/style.css">
+
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <!-- Load React -->
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+   
+
+		<!-- Exercício -->
+		<script type="text/babel"> 
+	
+		class Quadrado extends React.Component {
+			render() {
+				 return (
+					 <button
+						 className="quadrado"
+						 onClick={() => {this.props.onClick()}}>
+						 {this.props.value}
+						</button>
+				 );
+			 }
+			 
+		 }
+ 
+		 class Tabuleiro extends React.Component {
+			 
+			 constructor(props){
+				 super(props);
+				 this.state={
+					 quadrados:Array(9).fill(null),
+					 xIsNext: true      
+				 };
+			 }
+			 renderizarQuadrado (i){
+				 return (
+				 <Quadrado
+					 value={this.state.quadrados[i]}
+					 onClick={() => this.handleClick(i)}
+					 />
+				 );
+			 }
+			 
+			 
+			 render (){
+				 const vencedor = checarVencedor(this.state.quadrados);
+				 const status = vencedor ? ('Vencedor: ' + vencedor) : 
+				 								('Jogador: ' + (this.state.xIsNext ? 'X' :'O'))
+				 return (
+					 <div>
+						 <div> {status}</div>
+					 
+						 <div className="board-row">
+							 {this.renderizarQuadrado(0)}
+							 {this.renderizarQuadrado (1)}
+							 {this.renderizarQuadrado (2)}
+						 </div>
+						 <div className="board-row">
+							 {this.renderizarQuadrado (3)}
+							 {this.renderizarQuadrado (4)}
+							 {this.renderizarQuadrado (5)}
+						 </div>
+						 <div className="board-row">
+							 {this.renderizarQuadrado (6)}
+							 {this.renderizarQuadrado (7)}
+							 {this.renderizarQuadrado (8)}
+						 </div>
+						 <div className="button"> 
+							<button onClick={() =>  this.resetClick()}>Reiniciar</button>
+							<button onClick={() =>  this.randomPlay()}>Jogada Aleatória</button>
+						</div>  
+					 </div>
+				 );
+			 }
+			 
+			 handleClick(i) {
+				 const quadrados = this.state.quadrados.slice();
+				 if (checarVencedor(quadrados)) {
+					 alert ('Jogo Finalizado');
+					 return;
+				 }
+				 if (quadrados [i]) {
+					 alert ('Quadrado já preenchido!')
+					 return;
+				 }
+				 quadrados[i] = this.state.xIsNext? 'X':'O';
+				 this.setState({quadrados:quadrados, xIsNext:!this.state.xIsNext});
+			 }
+			 resetClick() {
+				 const quadrados = this.state.quadrados.fill(null);
+				 this.setState({quadrados:quadrados, value:null});
+			}
+			randomPlay() {
+				const quadrados = this.state.quadrados.slice();
+				var i = 0;
+				while(quadrados [i]) {
+					i = Math.floor(Math.random() * 9);
+				}
+				this.handleClick(i);
+					return;
+				
+			}
+		 }
+ 
+		 class Jogo extends React.Component {
+			 render() {
+				 return (
+					 <div className="game">
+						 <div className="game-board">
+							 <Tabuleiro/>
+							</div>
+						 </div>
+					);
+			 }
+			
+		 }
+ 
+		 function checarVencedor(quadrados) {
+			 const lines = [
+				 [0, 1, 2],
+				 [3, 4, 5],
+				 [6, 7, 8],
+				 [0, 3, 6],
+				 [1, 4, 7],
+				 [2, 5, 8],
+				 [0, 4, 8],
+				 [2, 4, 6],
+			 ];
+			 for (let i = 0; i < lines.length; i++) {
+				 const [a, b, c] = lines[i];
+				 if (quadrados[a] && quadrados[a] === quadrados[b] && quadrados[a] === quadrados[c]) {
+					 return quadrados[a];
+				 }
+			 }
+			 return null;
+		 }
+ 
+   
+		 ReactDOM.render (
+		 <Jogo/>,
+		 document.getElementById("root"));	
+
+		</script>
+  </body>
+</html>
